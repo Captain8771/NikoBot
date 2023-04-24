@@ -117,45 +117,46 @@ async def _eval(ctx: lightbulb.Context):
 
 
 @plugin.command()
-@lightbulb.option("extension", "The extension to load", modifier=lightbulb.OptionModifier.CONSUME_REST)
+@lightbulb.option("extensions", "The extension to load", modifier=lightbulb.OptionModifier.CONSUME_REST)
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("load", "Loads an extension", hidden=True)
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _load(ctx: lightbulb.Context, extension: str):
+async def _load(ctx: lightbulb.Context):
     try:
         plugin.bot.load_extensions(*ctx.options.extensions.split(" "))
     except Exception as e:
         await ctx.respond(f"```py\n{traceback.format_exc()}```")
     else:
-        await ctx.respond(f"Loaded {extension}!")
+        await ctx.respond(f"Loaded `{ctx.options.extensions.split(' ')}`!")
+
 
 @plugin.command()
-@lightbulb.option("extension", "The extension to unload", modifier=lightbulb.OptionModifier.CONSUME_REST)
+@lightbulb.option("extensions", "The extension to unload", modifier=lightbulb.OptionModifier.CONSUME_REST)
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("unload", "Unloads an extension", hidden=True)
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _unload(ctx: lightbulb.Context, extension: str):
+async def _unload(ctx: lightbulb.Context):
     try:
         plugin.bot.unload_extensions(*ctx.options.extensions.split(" "))
     except Exception as e:
         await ctx.respond(f"```py\n{traceback.format_exc()}```")
     else:
-        await ctx.respond(f"Unloaded {extension}!")
+        await ctx.respond(f"Loaded `{ctx.options.extensions.split(' ')}`!")
 
 
 @plugin.command()
-@lightbulb.option("extension", "The extension to reload", modifier=lightbulb.OptionModifier.CONSUME_REST, required=False)
+@lightbulb.option("extensions", "The extension to reload", modifier=lightbulb.OptionModifier.CONSUME_REST, required=False)
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("reload", "Reloads an extension", hidden=True)
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _reload(ctx: lightbulb.Context, extension: str):
+async def _reload(ctx: lightbulb.Context):
     if ctx.options.extension:
         try:
             plugin.bot.reload_extensions(*ctx.options.extensions.split(" "))
         except Exception as e:
             await ctx.respond(f"```py\n{traceback.format_exc()}```")
         else:
-            await ctx.respond(f"Reloaded {extension}!")
+            await ctx.respond(f"Loaded `{ctx.options.extensions.split(' ')}`!")
     else:
         # reload all
         try:
