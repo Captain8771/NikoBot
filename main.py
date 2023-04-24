@@ -18,6 +18,7 @@ if DISCORD_TOKEN is None:
     print("DISCORD_TOKEN is not set")
     exit(1)
 
+
 def get_prefix(bot: lightbulb.BotApp, message: hikari.Message):
     return ["niko, ", "solstice "]
 
