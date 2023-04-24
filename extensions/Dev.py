@@ -1,3 +1,5 @@
+import datetime
+
 import hikari
 import traceback
 import lightbulb
@@ -93,19 +95,90 @@ async def _eval(ctx: lightbulb.Context):
         except Exception as e:
             tb = traceback.format_exception(type(e), e, e.__traceback__)
             result = "".join(tb)
-        result = str(result)  # .replace(get_config().pc_name, "<PC NAME>")
-        n = 1990
-        chunks = [result[i: i + n] for i in range(0, len(result), n)]
+        result = str(result)
         success = True if not tb else False
-        if len(chunks) > 1:
-            for i, chunk in enumerate(chunks):
-                await ctx.respond(f"```py\n{chunk}```")
+        pag = lightbulb.utils.EmbedPaginator(
+            prefix="```py\n",
+            suffix="```",
+            max_chars=1990
+        )
+        pag.set_embed_factory(lambda index, content: hikari.Embed(
+            title="Evaluation " + ("Success" if success else "Failed") + f"[{index}]",
+            description=content,
+            color=0x00FF00 if success else 0xFF0000,
+            timestamp=datetime.datetime.now(tz=datetime.timezone.utc)
+        ))
+        for line in result.split("\n"):
+            pag.add_line(line)
+
+        navigator = lightbulb.utils.ButtonNavigator(pag.build_pages())
+        await navigator.run(ctx)
+
+
+
+@plugin.command()
+@lightbulb.option("extension", "The extension to load", modifier=lightbulb.OptionModifier.CONSUME_REST)
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command("load", "Loads an extension", hidden=True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _load(ctx: lightbulb.Context, extension: str):
+    try:
+        plugin.bot.load_extensions(*ctx.options.extensions.split(" "))
+    except Exception as e:
+        await ctx.respond(f"```py\n{traceback.format_exc()}```")
+    else:
+        await ctx.respond(f"Loaded {extension}!")
+
+@plugin.command()
+@lightbulb.option("extension", "The extension to unload", modifier=lightbulb.OptionModifier.CONSUME_REST)
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command("unload", "Unloads an extension", hidden=True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _unload(ctx: lightbulb.Context, extension: str):
+    try:
+        plugin.bot.unload_extensions(*ctx.options.extensions.split(" "))
+    except Exception as e:
+        await ctx.respond(f"```py\n{traceback.format_exc()}```")
+    else:
+        await ctx.respond(f"Unloaded {extension}!")
+
+
+@plugin.command()
+@lightbulb.option("extension", "The extension to reload", modifier=lightbulb.OptionModifier.CONSUME_REST, required=False)
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command("reload", "Reloads an extension", hidden=True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _reload(ctx: lightbulb.Context, extension: str):
+    if ctx.options.extension:
+        try:
+            plugin.bot.reload_extensions(*ctx.options.extensions.split(" "))
+        except Exception as e:
+            await ctx.respond(f"```py\n{traceback.format_exc()}```")
         else:
-            await ctx.respond(f"```py\n{chunks[0]}```")
+            await ctx.respond(f"Reloaded {extension}!")
+    else:
+        # reload all
+        try:
+            plugin.bot.reload_extensions(*plugin.bot.extensions)
+        except Exception as e:
+            await ctx.respond(f"```py\n{traceback.format_exc()}```")
+        else:
+            await ctx.respond(f"Reloaded all extensions!")
+
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only)
+@lightbulb.command("sync", "Syncs commands", hidden=True)
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _sync(ctx: lightbulb.Context):
+    await ctx.respond("Syncing commands globally...")
+    await plugin.bot.sync_application_commands()
+    await ctx.edit_last_response("Synced commands globally!")
 
 
 def load(bot):
     bot.add_plugin(plugin)
+
 
 def unload(bot):
     bot.remove_plugin(plugin)
