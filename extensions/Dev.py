@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import hikari
 import traceback
@@ -10,6 +11,7 @@ import asyncio
 import import_expression
 
 plugin = lightbulb.Plugin("Dev")
+logger = logging.getLogger("NikoBot").getChild("DevExtension")
 
 
 @plugin.command()
@@ -103,7 +105,7 @@ async def _eval(ctx: lightbulb.Context):
             max_chars=1990
         )
         pag.set_embed_factory(lambda index, content: hikari.Embed(
-            title="Evaluation " + ("Success" if success else "Failed") + f"[{index}]",
+            title="Evaluation " + ("Success" if success else "Failed") + f" [Page {index}]",
             description=content,
             color=0x00FF00 if success else 0xFF0000,
             timestamp=datetime.datetime.now(tz=datetime.timezone.utc)
@@ -113,7 +115,6 @@ async def _eval(ctx: lightbulb.Context):
 
         navigator = lightbulb.utils.ButtonNavigator(pag.build_pages())
         await navigator.run(ctx)
-
 
 
 @plugin.command()

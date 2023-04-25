@@ -1,12 +1,15 @@
+import logging
+
 import hikari
 import lightbulb
 
 plugin = lightbulb.Plugin("Handling")
+logger = logging.getLogger("NikoBot").getChild("HandlingExtension")
 
 
 @plugin.listener(hikari.StartedEvent)
 async def on_started(event: hikari.StartedEvent):
-    print(f"Logged in as {plugin.bot.get_me()}")
+    logger.info(f"Logged in as {plugin.bot.get_me()}")
 
 
 @plugin.listener(lightbulb.CommandErrorEvent)
@@ -28,7 +31,8 @@ async def on_command_error(event: lightbulb.CommandErrorEvent):
         await event.context.respond(embed=embed)
 
     elif isinstance(exception, lightbulb.errors.NotOwner):
-        await event.context.respond("segmentation fault (core dumped)")  # trol
+        await event.context.respond("Never gonna give you up, never gonna let you down, "
+                                    "never gonna run around and desert you.")
 
     else:
         # unknown exception

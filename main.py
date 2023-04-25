@@ -2,13 +2,16 @@
 import os
 import hikari
 import lightbulb
+from logging import getLogger, Logger
+
+logger = getLogger("nikobot.main")
 
 if os.name != "nt":
     try:
         import uvloop
         uvloop.install()
     except:
-        print("Installing uvloop is recommended on Linux, for better performance.")
+        logger.warning("Installing uvloop is recommended on Linux, for better performance.")
 
 
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
@@ -47,9 +50,9 @@ async def ping(ctx: lightbulb.Context):
 
 @bot.listen(hikari.StartingEvent)
 async def on_starting(event: hikari.StartingEvent):
-    print("Loading extensions...")
+    logger.info("Loading extensions...")
     bot.load_extensions_from("extensions")
-    print("Extensions loaded.")
+    logger.info("Extensions loaded.")
 
 
 if __name__ == "__main__":
