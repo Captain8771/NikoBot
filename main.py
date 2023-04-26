@@ -3,8 +3,39 @@ import os
 import hikari
 import lightbulb
 from logging import getLogger, Logger
+from utils import BotApp
+import config
 
-logger = getLogger("nikobot.main")
+if config.supress_hikari_and_lightbulb_logs:
+    import sys
+    import re
+    original_stdout = sys.stdout.write
+    original_stderr = sys.stderr.write
+
+    f = open(".hidden-logs.log", "w")
+
+    def write(text: str, type: str = "stdout"):
+        regex = re.compile(r"[a-z] \d{4}(?:-\d{2}){2} (?:\d{2}:){2}\d{2},\d{3} ((?:hikari|lightbulb)(?:\.[a-z]+\b)?)",
+                           re.IGNORECASE | re.MULTILINE)
+        # get matches from the text
+        # but first, escape the ansii escape codes
+        escaped = re.sub(r"\x1b\[[0-9;]*m", "", text)
+        matches = regex.findall(escaped)
+        if matches:
+            f.write(f"Hidden log from {matches[0]}: {escaped}")
+            f.flush()
+            return
+        if type == "stdout":
+
+            original_stdout(text)
+        elif type == "stderr":
+            original_stderr(text)
+
+    sys.stdout.write = lambda text: write(text, "stdout")
+    sys.stderr.write = lambda text: write(text, "stderr")
+
+
+logger = getLogger("NikoBot")
 
 if os.name != "nt":
     try:
@@ -28,7 +59,7 @@ def get_prefix(bot: lightbulb.BotApp, message: hikari.Message):
 
 # default intents
 intents = hikari.Intents.ALL & ~(hikari.Intents.GUILD_MEMBERS | hikari.Intents.GUILD_PRESENCES)
-bot = lightbulb.BotApp(
+bot = BotApp(
     token=DISCORD_TOKEN,
     prefix=get_prefix,
     intents=intents,
@@ -37,7 +68,8 @@ bot = lightbulb.BotApp(
         347366054806159360,  # main
         813770420758511636  # alt
     ],
-    case_insensitive_prefix_commands=True
+    case_insensitive_prefix_commands=True,
+    banner="assets"
 )
 
 
@@ -56,4 +88,6 @@ async def on_starting(event: hikari.StartingEvent):
 
 
 if __name__ == "__main__":
-    bot.run()
+    # bot.run()
+    logger.warning("Bot stopped. Exiting...")
+    exit(0)

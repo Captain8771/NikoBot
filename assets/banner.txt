@@ -1,0 +1,20 @@
+$bg_black$blue$bold┌─────────────────────────────────────────────────┐ $reset
+$bg_black$blue$bold│  ████████      ███     █████████                │ $reset
+$bg_black$blue$bold│ ███    ███   ███ ███   ███    ███      ███      │ $reset
+$bg_black$blue$bold│ ███         ███   ███  ███    ███      ███      │ $reset
+$bg_black$blue$bold│ ███        ███████████ █████████  █████████████ │ $reset
+$bg_black$blue$bold│ ███    ███ ███     ███ ███             ███      │ $reset
+$bg_black$blue$bold│  ████████  ███     ███ ███             ███      │ $reset
+$bg_black$blue$bold└─────────────────────────────────────────────────┘ $reset
+
+$bg_black $cyan┌─────────────────$blue Information $cyan─────────────────┐ $reset
+$bg_black   $cyan├─────────────$blue Bot Information $cyan─────────────┤   $reset
+$bg_black      $blue HOST $cyan-> $blue$system_description           $reset
+$bg_black      $blue VER  $cyan-> $blue$major.$minor.$patch                               $reset
+$bg_black   $cyan├───────────$blue Library Information $cyan───────────┤   $reset
+$bg_black       $blue LIB $cyan->$blue Hikari $hikari_version ($hikari_git_sha1)      $reset
+$bg_black       $blue CMD $cyan->$blue Lightbulb                           $reset
+$bg_black       $blue .PY $cyan->$blue $python_implementation ($python_version)                   $reset
+$bg_black $cyan└───────────────────────────────────────────────┘ $reset
+$reset
+
